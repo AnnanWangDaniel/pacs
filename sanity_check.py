@@ -47,7 +47,7 @@ def sanity_check(data_path, img_type):
 
     print("Sanity check passed.")
 
-data_path = "/home/wangannan/practice/pacs/data"
+data_path = "/home/wangannan/practice/data"
 img_type_lst = ["art_painting", "cartoon", "photo", "sketch"]
 for img_type in img_type_lst:
     sanity_check(data_path, img_type)
