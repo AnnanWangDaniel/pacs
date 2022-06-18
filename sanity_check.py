@@ -24,19 +24,19 @@ def sanity_check(data_path, img_type):
         img_name, _ = l.split(' ')
         img = Image.open(os.path.join(data_path, "images", img_name))
         img.verify()
-        train_set.add(img)
+        train_set.add(img_name)
 
     for l in val_list:
         img_name, _ = l.split(' ')
         img = Image.open(os.path.join(data_path, "images", img_name))
         img.verify()
-        val_set.add(img)
+        val_set.add(img_name)
 
     for l in test_list:
         img_name, _ = l.split(' ')
         img = Image.open(os.path.join(data_path, "images", img_name))
         img.verify()
-        test_set.add(img)
+        test_set.add(img_name)
 
     for i in test_set:
         if i in train_set:
