@@ -49,8 +49,12 @@ def sanity_check(data_path, img_type):
     if len(img_in_test_train) == 0 & len(img_in_test_val) == 0:
         print("Sanity check passed.")
     else:
-        print("img appears in both train set and test set: ", img_in_test_train)
-        print("img appears in both val set and test set: ", img_in_test_val)
+        print("img appears in both train set and test set: ", len(img_in_test_train))
+        for img in img_in_test_train:
+            print(img)
+        print("img appears in both val set and test set: ", len(img_in_test_val))
+        for img in img_in_test_val:
+            print(img)
 
 data_path = "/home/wangannan/practice/data"
 img_type_lst = ["art_painting", "cartoon", "photo", "sketch"]
