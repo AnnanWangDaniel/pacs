@@ -7,9 +7,9 @@ def sanity_check(data_path, img_type):
     train_file_name = img_type + "_train_kfold.txt"
     val_file_name = img_type + "_crossval_kfold.txt"
     test_file_name = img_type + "_test_kfold.txt"
-    train_set_path = os.join(data_path, "splits", train_file_name)
-    val_set_path = os.join(data_path, "splits", val_file_name)
-    test_set_path = os.join(data_path, "splits", test_file_name)
+    train_set_path = os.path.join(data_path, "splits", train_file_name)
+    val_set_path = os.path.join(data_path, "splits", val_file_name)
+    test_set_path = os.path.join(data_path, "splits", test_file_name)
     train_file = open(train_set_path, "r")
     train_list = train_file.readlines()
     val_file = open(val_set_path, "r")
