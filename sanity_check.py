@@ -17,9 +17,9 @@ def sanity_check(data_path, img_type):
     test_file = open(test_set_path, "r")
     test_list = test_file.readlines()
 
-    train_set = {}
-    val_set = {}
-    test_set = {}
+    train_set = set()
+    val_set = set()
+    test_set = set()
     for l in train_list:
         img_name, _ = l.split(' ')
         img = Image.open(os.path.join(data_path, "images", img_name))
