@@ -37,15 +37,20 @@ def sanity_check(data_path, img_type):
         img = Image.open(os.path.join(data_path, "images", img_name))
         img.verify()
         test_set.add(img_name)
-
+    img_in_test_train = []
+    img_in_test_val = []
     for i in test_set:
         if i in train_set:
-            raise RuntimeError("split_sanity_check: %s in both test and train set" % i)
+            img_in_test_train.append(i)
     for i in test_set:
         if i in val_set:
-            raise RuntimeError("split_sanity_check: %s in both test and val set" % i)
+            img_in_test_val.append(i)
 
-    print("Sanity check passed.")
+    if len(img_in_test_train) == 0 & len(img_in_test_val) == 0:
+        print("Sanity check passed.")
+    else:
+        print("img appears in both train set and test set: ", img_in_test_train)
+        print("img appears in both val set and test set: ", img_in_test_val)
 
 data_path = "/home/wangannan/practice/data"
 img_type_lst = ["art_painting", "cartoon", "photo", "sketch"]
