@@ -2,6 +2,8 @@ import os
 from PIL import Image
 
 def sanity_check(data_path, img_type):
+    print(data_path)
+    print(img_type)
     train_file_name = img_type + "_train_kfold.txt"
     val_file_name = img_type + "_crossval_kfold.txt"
     test_file_name = img_type + "_test_kfold.txt"
@@ -44,3 +46,6 @@ def sanity_check(data_path, img_type):
             raise RuntimeError("split_sanity_check: %s in both test and val set" % i)
 
     print("Sanity check passed.")
+
+data_path = "/home/wangannan/practice/pacs/data"
+img_type_lst = ["art_painting", "cartoon", "photo", "sketch"] 
