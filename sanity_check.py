@@ -61,6 +61,9 @@ def sanity_check(data_path, img_type):
         for img in img_in_test_val:
             print(img)
 
+    print(len(train_list))
+    print(len(val_list))
+    print(len(test_list))
     print(len(img_in_test_train))
     print(len(img_in_test_val))
 
