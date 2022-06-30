@@ -1,5 +1,6 @@
 import os
 from PIL import Image
+import time
 
 def sanity_check(data_path, img_type):
     print(data_path)
@@ -72,3 +73,4 @@ data_path = "/home/wangannan/practice/data"
 img_type_lst = ["art_painting", "cartoon", "photo", "sketch"]
 for img_type in img_type_lst:
     sanity_check(data_path, img_type)
+    time.sleep(10)
