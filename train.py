@@ -78,7 +78,7 @@ cartoon_dataloader = DataLoader(cartoon_dataset, batch_size=BATCH_SIZE, shuffle=
 sketch_dataloader = DataLoader(sketch_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=4, drop_last=False)
 
 # for img, _ in photo_dataloader : 
-#   print(img.shape)
+#   print(img.shape)  #(3, 227, 227)
 
 if MODE == None :
   raise RuntimeError("Select a MODE")
