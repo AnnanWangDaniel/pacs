@@ -53,7 +53,7 @@ transf = transforms.Compose([ #transforms.Resize(227),      # Resizes short size
 ])
 
 # Define pacs data path
-DATA_PATH = "/home/wangannan/practice/data"
+DATA_PATH = "/home/wangannan/practice/data/images"
 
 PHOTO_PATH = os.path.join(DATA_PATH, 'photo')
 ART_PATH = os.path.join(DATA_PATH, 'art_painting')
