@@ -1,6 +1,7 @@
 import sys
 import os
 import logging
+from model import MyCNN
 
 import torch
 import torch.nn as nn
@@ -14,7 +15,7 @@ from torchvision import transforms
 from PIL import Image
 from tqdm import tqdm
 
-#from models.models import *
+from model import MyCNN
 #from utils.utils import *
 
 DEVICE = 'cuda'      # 'cuda' or 'cpu'
@@ -124,7 +125,7 @@ source_dataloader = photo_dataloader
 test_dataloader = art_dataloader
 
 # Loading model 
-net = dann_net(pretrained=True).to(DEVICE)    
+net = MyCNN(pretrained=True).to(DEVICE)    
 #print(net) #check size output layer OK
 
 # Define loss function: CrossEntrpy for classification
