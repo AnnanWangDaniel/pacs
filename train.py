@@ -78,11 +78,11 @@ cartoon_dataloader = DataLoader(cartoon_dataset, batch_size=BATCH_SIZE, shuffle=
 sketch_dataloader = DataLoader(sketch_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=4, drop_last=False)
 
 # check dimensions of images
-# cnt = 0
-# for img, _ in dataloader : 
-#   print(img.shape)
-#   cnt+=1
-# print(cnt)
+cnt = 0
+for img, _ in photo_dataloader : 
+  print(img.shape)
+  cnt+=1
+  print(cnt)
 
 ### Prepare Network for training
 
