@@ -135,7 +135,7 @@ criterion = nn.CrossEntropyLoss()
 parameters_to_optimize = net.parameters() # In this case we optimize over all the parameters of AlexNet
 
 # Define optimizer: updates the weights based on loss (SDG with momentum)
-optimizer = optim.SGD(parameters_to_optimize, lr=LR, momentum=MOMENTUM, weight_decay=WEIGHT_DECAY)
+optimizer = optim.SGD(parameters_to_optimize, lr=LR, momentum=MOMENTUM)
 
 # Define scheduler -> step-down policy which multiplies learning rate by gamma every STEP_SIZE epochs
 scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=STEP_SIZE, gamma=GAMMA)
