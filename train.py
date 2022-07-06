@@ -84,6 +84,24 @@ for img, _ in photo_dataloader :
   cnt+=1
   print(cnt)
 
+cnt = 0
+for img, _ in art_dataloader : 
+  print(img.shape)
+  cnt+=1
+  print(cnt)
+
+cnt = 0
+for img, _ in cartoon_dataloader : 
+  print(img.shape)
+  cnt+=1
+  print(cnt)
+
+cnt = 0
+for img, _ in sketch_dataloader : 
+  print(img.shape)
+  cnt+=1
+  print(cnt)
+
 ### Prepare Network for training
 
 cudnn.benchmark # Calling this optimizes runtime
