@@ -77,16 +77,8 @@ art_dataloader = DataLoader(art_dataset, batch_size=BATCH_SIZE, shuffle=True, nu
 cartoon_dataloader = DataLoader(cartoon_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=4, drop_last=False)
 sketch_dataloader = DataLoader(sketch_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=4, drop_last=False)
 
-# check dimensions of images
-# cnt = 0
 # for img, _ in photo_dataloader : 
 #   print(img.shape)
-#   cnt+=1
-#   print(cnt)
-
-### Prepare Network for training
-
-cudnn.benchmark # Calling this optimizes runtime
 
 if MODE == None :
   raise RuntimeError("Select a MODE")
