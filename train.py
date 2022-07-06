@@ -14,7 +14,7 @@ from torchvision import transforms
 from PIL import Image
 from tqdm import tqdm
 
-from models.models import *
+#from models.models import *
 from utils.utils import *
 
 DEVICE = 'cuda'      # 'cuda' or 'cpu'
