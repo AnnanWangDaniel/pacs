@@ -16,7 +16,7 @@ class MyCNN(nn.Module):
         self.bn4 = nn.BatchNorm2d(24)
         self.conv5 = nn.Conv2d(in_channels=24, out_channels=24, kernel_size=5, stride=1, padding=1)
         self.bn5 = nn.BatchNorm2d(24)
-        self.fc1 = nn.Linear(24*10*10, 10)
+        self.fc1 = nn.Linear(24*227*227, 10)
 
     def forward(self, input):
         output = F.relu(self.bn1(self.conv1(input)))      
@@ -24,7 +24,7 @@ class MyCNN(nn.Module):
         output = self.pool(output)                        
         output = F.relu(self.bn4(self.conv4(output)))     
         output = F.relu(self.bn5(self.conv5(output)))     
-        output = output.view(-1, 3*227*227)
+        output = output.view(-1, 24*227*227)
         output = self.fc1(output)
 
         return output
