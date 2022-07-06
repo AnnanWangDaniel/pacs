@@ -125,7 +125,7 @@ source_dataloader = photo_dataloader
 test_dataloader = art_dataloader
 
 # Loading model 
-net = MyCNN(pretrained=True).to(DEVICE)    
+net = MyCNN().to(DEVICE)    
 #print(net) #check size output layer OK
 
 # Define loss function: CrossEntrpy for classification
