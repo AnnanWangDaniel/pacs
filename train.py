@@ -43,12 +43,10 @@ SHOW_RESULTS = True   # if 'True' show images and graphs on output
 # Define Data Preprocessing
 
 # means and standard deviations ImageNet because the network is pretrained
-means, stds = (0.485, 0.456, 0.406), (0.229, 0.224, 0.225)
+means, stds = (0.5, 0.5, 0.5), (0.5, 0.5, 0.5)
 
 # Define transforms to apply to each image
-transf = transforms.Compose([ #transforms.Resize(227),      # Resizes short size of the PIL image to 256
-                              transforms.CenterCrop(224),  # Crops a central square patch of the image 224 because torchvision's AlexNet needs a 224x224 input!
-                              transforms.ToTensor(), # Turn PIL Image to torch.Tensor
+transf = transforms.Compose([ transforms.ToTensor(), # Turn PIL Image to torch.Tensor
                               transforms.Normalize(means,stds) # Normalizes tensor with mean and standard deviation
 ])
 
