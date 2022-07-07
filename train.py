@@ -132,17 +132,12 @@ optimizer = optim.SGD(parameters_to_optimize, lr=LR, momentum=MOMENTUM)
 # Define scheduler -> step-down policy which multiplies learning rate by gamma every STEP_SIZE epochs
 scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=STEP_SIZE, gamma=GAMMA)
 
-if USE_DOMAIN_ADAPTATION and ALPHA == None :
-  raise RuntimeError("To use domain adaptation you must define parameter ALPHA")
-
 if transfer_set == 'cartoon':
   target_dataloader = cartoon_dataloader
 elif transfer_set == 'sketch':
   target_dataloader = sketch_dataloader
 else :
   target_dataloader = test_dataloader # art_dataloader
-
-### TRAIN
 
 current_step = 0
 accuracies_train = []
@@ -163,7 +158,7 @@ for epoch in range(NUM_EPOCHS):
     source_images = source_images.to(DEVICE)
     source_labels = source_labels.to(DEVICE)    
 
-    optimizer.zero_grad() # Zero-ing the gradients
+    optimizer.zero_grad()
     
     # STEP 1: train the classifier
     outputs = net(source_images)          
@@ -187,23 +182,12 @@ for epoch in range(NUM_EPOCHS):
       #   ALPHA = 2. / (1. + np.exp(-10 * p)) - 1
     
       # STEP 2: train the discriminator: forward SOURCE data to Gd          
-      outputs = net.forward(source_images, alpha=ALPHA)
+      outputs = net.forward(source_images)
       # source's label is 0 for all data    
       labels_discr_source = torch.zeros(BATCH_SIZE, dtype=torch.int64).to(DEVICE)
       loss_discr_source = criterion(outputs, labels_discr_source)  
       loss_source_list.append(loss_discr_source.item())         
-      # if current_step % LOG_FREQUENCY == 0:
-      #   print('Step {}, Loss Discriminator Source {}'.format(current_step+1, loss_discr_source.item()))
       loss_discr_source.backward()
-
-      # STEP 3: train the discriminator: forward TARGET to Gd          
-      outputs = net.forward(target_images, alpha=ALPHA)           
-      labels_discr_target = torch.ones(BATCH_SIZE, dtype=torch.int64).to(DEVICE) # target's label is 1
-      loss_discr_target = criterion(outputs, labels_discr_target)    
-      loss_target_list.append(loss_discr_target.item())     
-      # if current_step % LOG_FREQUENCY == 0:
-        # print('Step {}, Loss Discriminator Target {}'.format(current_step+1, loss_discr_target.item()))
-      loss_discr_target.backward()    #update gradients 
 
     optimizer.step() # update weights based on accumulated gradients          
     
