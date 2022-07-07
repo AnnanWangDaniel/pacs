@@ -24,7 +24,7 @@ class MyCNN(nn.Module):
         output = self.pool(output)
         output = F.relu(self.bn4(self.conv4(output)))
         output = F.relu(self.bn5(self.conv5(output)))
-        output = output.flatten(1)
+        output = output.view(output.size(0), -1)
         output = self.fc1(output)
 
         return output
