@@ -16,7 +16,7 @@ class MyCNN(nn.Module):
         self.bn4 = nn.BatchNorm2d(24)
         self.conv5 = nn.Conv2d(in_channels=24, out_channels=24, kernel_size=5, stride=1, padding=1)
         self.bn5 = nn.BatchNorm2d(24)
-        self.fc1 = nn.Linear(24*227*227, 7)
+        self.fc1 = nn.Linear(24*107*107, 7)
 
     def forward(self, input):
         output = F.relu(self.bn1(self.conv1(input)))
