@@ -28,7 +28,7 @@ MOMENTUM = 0.9       # Hyperparameter for SGD, keep this at 0.9 when using SGD
 GAMMA = 0.3          # Multiplicative factor for learning rate step-down
 STEP_SIZE = 3
 
-BATCH_SIZE = 256      
+BATCH_SIZE = 64      
 LR = 1e-3             # The initial Learning Rate
 NUM_EPOCHS = 30       # Total number of training epochs (iterations over dataset)
 
