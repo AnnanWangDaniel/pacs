@@ -113,7 +113,7 @@ for epoch in range(NUM_EPOCHS):
   print(f"--- Epoch {epoch+1}/{NUM_EPOCHS}, LR = {scheduler.get_last_lr()}")
   
   # Iterate over the dataset
-  for source_images, source_labels in itr_merge(test_dataloader):
+  for source_images, source_labels in itr_merge(train_dataloader):
     source_images = source_images.to(DEVICE)
     source_labels = source_labels.to(DEVICE)    
 
@@ -131,7 +131,7 @@ for epoch in range(NUM_EPOCHS):
 
     running_corrects_train = 0
 
-    for images_train, labels_train in train_dataloader:
+    for images_train, labels_train in itr_merge(train_dataloader):
       # images, labels = next(iter(source_dataloader))
       images_train = images_train.to(DEVICE)
       labels_train = labels_train.to(DEVICE)
