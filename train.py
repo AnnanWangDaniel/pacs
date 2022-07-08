@@ -7,7 +7,6 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, ConcatDataset
-from torch.backends import cudnn
 
 import torchvision
 from torchvision import transforms
@@ -80,7 +79,12 @@ sketch_dataloader = DataLoader(sketch_dataset, batch_size=BATCH_SIZE, shuffle=Tr
 # for img, _ in photo_dataloader : 
 #   print(img.shape)  #(3, 227, 227)
 
-train_dataloader = ConcatDataset([photo_dataloader, art_dataloader, cartoon_dataloader])
+def itr_merge(*itrs):
+  for itr in itrs:
+    for v in itr:
+      yield v
+
+train_dataloader = [photo_dataloader, art_dataloader, cartoon_dataloader]
 test_dataloader = sketch_dataloader
 
 # Loading model 
@@ -109,7 +113,7 @@ for epoch in range(NUM_EPOCHS):
   print(f"--- Epoch {epoch+1}/{NUM_EPOCHS}, LR = {scheduler.get_last_lr()}")
   
   # Iterate over the dataset
-  for source_images, source_labels in train_dataloader:
+  for source_images, source_labels in itr_merge(test_dataloader):
     source_images = source_images.to(DEVICE)
     source_labels = source_labels.to(DEVICE)    
 
