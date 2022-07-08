@@ -28,7 +28,7 @@ GAMMA = 0.8
 STEP_SIZE = 3
 BATCH_SIZE = 64
 LR = 1e-3
-NUM_EPOCHS = 30
+NUM_EPOCHS = 20
 
 EVAL_ACCURACY_ON_TRAINING = False
 
@@ -136,11 +136,6 @@ for epoch in range(NUM_EPOCHS):
   # Step the scheduler
   current_step += 1
   scheduler.step() 
-
-if SHOW_RESULTS: 
-  print()
-  print("Loss classifier")
-  print(loss_class_list)
 
 net = net.to(DEVICE) # this will bring the network to GPU if DEVICE is cuda
 net.train(False) # Set Network to evaluation mode
