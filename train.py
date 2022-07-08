@@ -79,12 +79,7 @@ sketch_dataloader = DataLoader(sketch_dataset, batch_size=BATCH_SIZE, shuffle=Tr
 # for img, _ in photo_dataloader : 
 #   print(img.shape)  #(3, 227, 227)
 
-def itr_merge(*itrs):
-  for itr in itrs:
-    for v in itr:
-      yield v
-
-train_dataloader = itr_merge(photo_dataloader, art_dataloader, cartoon_dataloader)
+train_dataloader = [d for dl in [photo_dataloader, art_dataloader, cartoon_dataloader] for d in dl]
 test_dataloader = sketch_dataloader
 
 # Loading model 
