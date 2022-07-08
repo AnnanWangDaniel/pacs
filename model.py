@@ -3,20 +3,6 @@ import torch.nn as nn
 import torchvision
 import torch.nn.functional as F
 
-class GeM(nn.Module):
-    def __init__(self, p=3, eps=1e-6):
-        super(GeM,self).__init__()
-        self.p = nn.Parameter(torch.ones(1)*p)
-        self.eps = eps
-
-    def forward(self, x):
-        return self.gem(x, p=self.p, eps=self.eps)
-        
-    def gem(self, x, p=3, eps=1e-6):
-        return F.avg_pool2d(x.clamp(min=eps).pow(p), (x.size(-2), x.size(-1))).pow(1./p)
-        
-    def __repr__(self):
-        return self.__class__.__name__ + '(' + 'p=' + '{:.4f}'.format(self.p.data.tolist()[0]) + ', ' + 'eps=' + str(self.eps) + ')'
 
 class MyCNN(nn.Module):
     def __init__(self):
@@ -26,8 +12,7 @@ class MyCNN(nn.Module):
         self.bn1 = nn.BatchNorm2d(32)
         self.conv2 = nn.Conv2d(in_channels=32, out_channels=64, kernel_size=5, stride=1, padding=1)
         self.bn2 = nn.BatchNorm2d(64)
-        #self.pool = nn.MaxPool2d(2,2)
-        self.pool = GeM()
+        self.pool = nn.MaxPool2d(2,2)
         self.conv4 = nn.Conv2d(in_channels=64, out_channels=128, kernel_size=5, stride=1, padding=1)
         self.bn4 = nn.BatchNorm2d(128)
         self.conv5 = nn.Conv2d(in_channels=128, out_channels=128, kernel_size=5, stride=1, padding=1)
