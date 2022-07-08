@@ -30,8 +30,6 @@ BATCH_SIZE = 64
 LR = 1e-3
 NUM_EPOCHS = 20
 
-EVAL_ACCURACY_ON_TRAINING = False
-
 means, stds = (0.5, 0.5, 0.5), (0.5, 0.5, 0.5)
 
 # Define transforms to apply to each image
@@ -71,15 +69,10 @@ sketch_dataloader = DataLoader(sketch_dataset, batch_size=BATCH_SIZE, shuffle=Tr
 train_dataloader = [d for dl in [photo_dataloader, art_dataloader, cartoon_dataloader] for d in dl]
 test_dataloader = sketch_dataloader
 
-# Loading model 
 net = MyCNN().to(DEVICE)
-#print(net) #check size output layer OK
 
-# Define loss function: CrossEntrpy for classification
 criterion = nn.CrossEntropyLoss()
-
 parameters_to_optimize = net.parameters()
-
 optimizer = optim.SGD(parameters_to_optimize, lr=LR, momentum=MOMENTUM)
 scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=STEP_SIZE, gamma=GAMMA)
 
@@ -131,7 +124,8 @@ for epoch in range(NUM_EPOCHS):
     # Calculate Accuracy
     accuracy_train = running_corrects_train / float(len(train_dataloader)*(test_dataloader.batch_size))
     accuracies_train.append(accuracy_train)
-    print('Accuracy on train (photo, art, cartoon):', accuracy_train)
+    print('Train Accuracy (photo, art, cartoon): {}, \nVal Accuracy (photo, art, cartoon): {}, \
+          ', accuracy_train)
 
   # Step the scheduler
   current_step += 1
@@ -157,4 +151,4 @@ for images, labels in tqdm(test_dataloader):
 # Calculate Accuracy
 accuracy = running_corrects / float(len(art_dataset))
 
-print('\nTest Accuracy (art painting): {} ({} / {})'.format(accuracy, running_corrects, len(art_dataset)))
+print('\nTest Accuracy (sketch): {} ({} / {})'.format(accuracy, running_corrects, len(art_dataset)))
