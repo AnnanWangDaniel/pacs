@@ -6,7 +6,7 @@ from model import MyCNN
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, ConcatDataset
 from torch.backends import cudnn
 
 import torchvision
@@ -80,64 +80,20 @@ sketch_dataloader = DataLoader(sketch_dataset, batch_size=BATCH_SIZE, shuffle=Tr
 # for img, _ in photo_dataloader : 
 #   print(img.shape)  #(3, 227, 227)
 
-if MODE == None :
-  raise RuntimeError("Select a MODE")
-elif MODE == '3A':  
-  # 3A) SENZA DANN	
-  USE_DOMAIN_ADAPTATION = False
-  CROSS_DOMAIN_VALIDATION = False 
-  USE_VALIDATION = False
-  ALPHA = None
-  transfer_set = None
-elif MODE == '3B' : 
-  # 3B) Train DANN on Photo and test on Art painting with DANN adaptation
-  USE_DOMAIN_ADAPTATION = True 
-  transfer_set = "art painting"
-elif MODE == '4A':
-  # 4A) Run a grid search on Photo to Cartoon and Photo to Sketch, without Domain Adaptation, and average results for each set of hyperparameters
-  transfer_set = 'sketch' # Photo to 'cartoon' or 'sketch'
-  USE_VALIDATION = True   # validation on transfer_set
-  USE_DOMAIN_ADAPTATION = False
-  CROSS_DOMAIN_VALIDATION = False 
-  ALPHA = None
-  # 4B) when testing
-elif MODE == '4C':
-  # 4C) Run a grid search on Photo to Cartoon and Photo to Sketch, with Domain Adaptation, and average results for each set of hyperparameters
-  USE_VALIDATION = True   # validation on transfer_set
-  USE_DOMAIN_ADAPTATION = True
-  CROSS_DOMAIN_VALIDATION = True 
-  # edit the following hyperparams:
-  transfer_set = 'sketch' # Photo to 'cartoon' or 'sketch'
-
-
-EVAL_ACCURACY_ON_TRAINING = False
-SHOW_RESULTS = True
-
-source_dataloader = photo_dataloader
-test_dataloader = art_dataloader
+train_dataloader = ConcatDataset([photo_dataloader, art_dataloader, cartoon_dataloader])
+test_dataloader = sketch_dataloader
 
 # Loading model 
-net = MyCNN().to(DEVICE)    
+net = MyCNN().to(DEVICE)
 #print(net) #check size output layer OK
 
 # Define loss function: CrossEntrpy for classification
 criterion = nn.CrossEntropyLoss()
 
-# Choose parameters to optimize
-parameters_to_optimize = net.parameters() # In this case we optimize over all the parameters of AlexNet
+parameters_to_optimize = net.parameters()
 
-# Define optimizer: updates the weights based on loss (SDG with momentum)
 optimizer = optim.SGD(parameters_to_optimize, lr=LR, momentum=MOMENTUM)
-
-# Define scheduler -> step-down policy which multiplies learning rate by gamma every STEP_SIZE epochs
 scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=STEP_SIZE, gamma=GAMMA)
-
-if transfer_set == 'cartoon':
-  target_dataloader = cartoon_dataloader
-elif transfer_set == 'sketch':
-  target_dataloader = sketch_dataloader
-else :
-  target_dataloader = test_dataloader # art_dataloader
 
 current_step = 0
 accuracies_train = []
@@ -146,7 +102,6 @@ loss_class_list = []
 loss_target_list = []
 loss_source_list = []
 
-# Start iterating over the epochs
 for epoch in range(NUM_EPOCHS):
   
   net.train(True)
@@ -154,87 +109,41 @@ for epoch in range(NUM_EPOCHS):
   print(f"--- Epoch {epoch+1}/{NUM_EPOCHS}, LR = {scheduler.get_last_lr()}")
   
   # Iterate over the dataset
-  for source_images, source_labels in source_dataloader:
+  for source_images, source_labels in train_dataloader:
     source_images = source_images.to(DEVICE)
     source_labels = source_labels.to(DEVICE)    
 
     optimizer.zero_grad()
     
-    # STEP 1: train the classifier
     outputs = net(source_images)          
     loss_class = criterion(outputs, source_labels)  
     loss_class_list.append(loss_class.item())
+    loss_class.backward()
 
-    # if current_step % LOG_FREQUENCY == 0:
-    #   print('Step {}, Loss Classifier {}'.format(current_step+1, loss_class.item()))                
-    loss_class.backward()  # backward pass: computes gradients
-
-    # Domain Adaptation (Cross Domain Validation)
-    if USE_DOMAIN_ADAPTATION :
-
-      # Load target batch
-      target_images, target_labels = next(iter(target_dataloader))
-      target_images = target_images.to(DEVICE) 
-      
-      # if ALPHA_EXP : 
-      #   # ALPHA exponential decaying as described in the paper
-      #   p = float(i + epoch * len_dataloader) / NUM_EPOCHS / len_dataloader
-      #   ALPHA = 2. / (1. + np.exp(-10 * p)) - 1
+    optimizer.step()      
     
-      # STEP 2: train the discriminator: forward SOURCE data to Gd          
-      outputs = net.forward(source_images)
-      # source's label is 0 for all data    
-      labels_discr_source = torch.zeros(BATCH_SIZE, dtype=torch.int64).to(DEVICE)
-      loss_discr_source = criterion(outputs, labels_discr_source)  
-      loss_source_list.append(loss_discr_source.item())         
-      loss_discr_source.backward()
+  with torch.no_grad():
+    net.train(False)
 
-    optimizer.step() # update weights based on accumulated gradients          
-    
-  # --- Accuracy on training
-  if EVAL_ACCURACY_ON_TRAINING:
-    with torch.no_grad():
-      net.train(False)
+    running_corrects_train = 0
 
-      running_corrects_train = 0
+    for images_train, labels_train in train_dataloader:
+      # images, labels = next(iter(source_dataloader))
+      images_train = images_train.to(DEVICE)
+      labels_train = labels_train.to(DEVICE)
 
-      for images_train, labels_train in source_dataloader:
-        # images, labels = next(iter(source_dataloader))
-        images_train = images_train.to(DEVICE)
-        labels_train = labels_train.to(DEVICE)
+      # Forward Pass
+      outputs_train = net(images_train)
+      # Get predictions
+      _, preds = torch.max(outputs_train.data, 1)
 
-        # Forward Pass
-        outputs_train = net(images_train)
-
-        # Get predictions
-        _, preds = torch.max(outputs_train.data, 1)
-
-        # Update Corrects
-        running_corrects_train += torch.sum(preds == labels_train.data).data.item()
+      # Update Corrects
+      running_corrects_train += torch.sum(preds == labels_train.data).data.item()
 
     # Calculate Accuracy
-    accuracy_train = running_corrects_train / float(len(source_dataloader)*(target_dataloader.batch_size))
+    accuracy_train = running_corrects_train / float(len(train_dataloader)*(test_dataloader.batch_size))
     accuracies_train.append(accuracy_train)
     print('Accuracy on train (photo):', accuracy_train)
-    
-  # --- VALIDATION SET
-  if USE_VALIDATION : 
-    # now train is finished, evaluate the model on the target dataset 
-    net.train(False) # Set Network to evaluation mode
-      
-    running_corrects = 0
-    for images, labels in target_dataloader:
-      images = images.to(DEVICE)
-      labels = labels.to(DEVICE)
-      
-      outputs = net(images)
-      _, preds = torch.max(outputs.data, 1)
-      running_corrects += torch.sum(preds == labels.data).data.item()
-
-    # Calculate Accuracy
-    accuracy = running_corrects / float( len(target_dataloader)*(target_dataloader.batch_size) )
-    accuracies_validation.append(accuracy)
-    print(f"Accuracy on validation ({transfer_set}): {accuracy}")
 
   # Step the scheduler
   current_step += 1
@@ -244,13 +153,6 @@ if SHOW_RESULTS:
   print()
   print("Loss classifier")
   print(loss_class_list)
-  if USE_DOMAIN_ADAPTATION : 
-    print("\nLoss discriminator source")
-    print(loss_source_list)
-    print("\nLoss discriminator target")
-    print(loss_target_list)
-
-### TEST
 
 net = net.to(DEVICE) # this will bring the network to GPU if DEVICE is cuda
 net.train(False) # Set Network to evaluation mode
@@ -273,14 +175,3 @@ for images, labels in tqdm(test_dataloader):
 accuracy = running_corrects / float(len(art_dataset))
 
 print('\nTest Accuracy (art painting): {} ({} / {})'.format(accuracy, running_corrects, len(art_dataset)))
-
-### Print results
-if USE_VALIDATION : 
-  print(f"Validation on:  {transfer_set}")
-  print(f"accuracy_valid: {accuracies_validation[-1]:.4f}")
-print(f"Test accuracy:  {accuracy:.4f}")
-print(f"Val on {transfer_set}, LR = {LR}, ALPHA = {ALPHA}, BATCH_SIZE = {BATCH_SIZE}")
-
-if USE_DOMAIN_ADAPTATION :
-  # Plot losses 
-  plotLosses(loss_class_list, loss_source_list, loss_target_list, n_epochs=len(loss_class_list), show=SHOW_IMG)
