@@ -124,7 +124,7 @@ for epoch in range(NUM_EPOCHS):
     # Calculate Accuracy
     accuracy_train = running_corrects_train / float(len(train_dataloader)*(test_dataloader.batch_size))
     accuracies_train.append(accuracy_train)
-    print('Train Accuracy (photo, art, cartoon): {}', accuracy_train)
+    print('Train Accuracy (photo, art, cartoon): {}'.format(accuracy_train))
 
   # Step the scheduler
   current_step += 1
