@@ -23,26 +23,15 @@ DATASETS_NAMES = ['photo', 'art', 'cartoon', 'sketch']
 CLASSES_NAMES = ['Dog', 'Elephant', 'Giraffe', 'Guitar', 'Horse', 'House', 'Person']
 
 # HYPERPARAMETER -------------------
-MOMENTUM = 0.9       # Hyperparameter for SGD, keep this at 0.9 when using SGD
-GAMMA = 0.3          # Multiplicative factor for learning rate step-down
+MOMENTUM = 0.9
+GAMMA = 0.8
 STEP_SIZE = 3
-
-BATCH_SIZE = 64      
-LR = 1e-3             # The initial Learning Rate
-NUM_EPOCHS = 30       # Total number of training epochs (iterations over dataset)
-
-MODE = '4C'           # '3A', '3B', '4A', '4C'
-ALPHA = 0.25          # alpha
-ALPHA_EXP = False
-
+BATCH_SIZE = 64
+LR = 1e-3
+NUM_EPOCHS = 30
 
 EVAL_ACCURACY_ON_TRAINING = False
-SHOW_IMG = True       # if 'True' show images and graphs on output
-SHOW_RESULTS = True   # if 'True' show images and graphs on output
 
-# Define Data Preprocessing
-
-# means and standard deviations ImageNet because the network is pretrained
 means, stds = (0.5, 0.5, 0.5), (0.5, 0.5, 0.5)
 
 # Define transforms to apply to each image
